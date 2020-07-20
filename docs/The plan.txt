@@ -1,0 +1,29 @@
+The plan
+
+Set up github > Share with Chris
+Re-find resources describing the differences between face detection algorithms
+Get opencv working on this machine
+Start on face detection + face morphing functions
+Expand into image detection & pattern recognition for medical science. (Microscope + macroscopic samples + mechanical arm)
+high / low pass filters (fourier transforms), take the inverse etc
+
+Python + Git folder structure & workflow:
+Python minor challenges 
+
+Challenges with this task:
+
+I've been asked to take an average of more than 2 faces. 
+Currently there are plenty of tutorials out there demonstrating openCV's library for morphing 2 faces together using 
+Facial Landmark Detection & Delaunay Triangulation to map two facial structures together & then perform a series of warps & alpha blends.
+Now I could have openCV take the first 2 images of a folder, perform the above task, save the result and then iteratively 
+morph every face into the previously saved result but is that truly an average?
+
+If I'm not mistaken this is the Viola-Jones algorithm
+
+However what I'm thinking is it might be far more efficient and scientifically accurate to use the
+Histograms of Oriented Gradients (HOGS) technique. This looks at an image pixel by pixel and looks at the surrounding pixels to 
+determine how dark or light the surrounding pixels are, see HOG generated facial pattern.png. From here it would be possible to 
+calculate an average gradient for each sector of an X by Y image provided we set some constraints on the type of picture we take...
+IE face forward, no glasses, hair out of the way, a distance X from the camera. Maybe even place a screen with the silhouette of a face
+similar to what you see at a photo booth for ID's
+
