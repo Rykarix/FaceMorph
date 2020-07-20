@@ -131,6 +131,7 @@ class MainWindow(QMainWindow):
             self.actionStop_Camera.setEnabled(False)
             self.userTools.setEnabled(False)
     
+    #Test
     # Refreshing status by re-running initCam with new action data
     def refreshCamDevice(self, action):
         self.initCam(action.data())
