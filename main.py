@@ -1,39 +1,3 @@
-#############################################################################
-##
-## TASK LIST:
-## 
-## First we need a UI:
-## - User should see a live cam feed
-## - User should see a preview of processed images 
-## - The app should contain a toolbox that helps them manage
-##   camera settings, Image processing functions and anything
-##   else they need
-##
-## Then we need to write functions that do tings :)
-## - Face morph
-## - Infrared (Detect fevers - especially useful considering Covid)
-## - Malinoma detection? How? Detect blemishes on skin? Chris?
-## - Aging process?
-## 
-## Things I'd do with infinite resources / time:
-## - Mount the camera to a robotic arm - have it auto detect best pos.
-## - Use a point cloud camera - 3D scan of face
-## - Apply above processes in 3D
-##
-## To accomplish the above I will be making heavy use of 2 core packages. 
-## PyQt5 to handle GUI and OpenCV to handle image processing.
-## Both are well known and updated regularly. 
-##
-## Listing the resources I'm using for Academic integrity
-## UI:
-## PyQt5 Source code & tools: https://riverbankcomputing.com/software/pyqt/download5
-## Qt docs: https://doc.qt.io/qt-5/index.html
-## This will be all I need to use for GUI as 99% of everything else on the internet
-## that tries to use & explain the PyQt package isn't coded too well
-##
-#############################################################################
-
-
 import sys, os
 import cv2
 from PyQt5.QtCore import Qt, QByteArray, qFuzzyCompare, QTimer
@@ -41,9 +5,11 @@ from PyQt5.QtMultimedia import (QAudioEncoderSettings, QCamera,
         QCameraImageCapture, QImageEncoderSettings, QMediaMetaData,
         QMediaRecorder, QMultimedia, QVideoEncoderSettings)
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QDialog,
-        QMainWindow, QMessageBox)
+        QMainWindow, QMessageBox, QComboBox)
 from PyQt5.uic import loadUi
-from PyQt5.QtGui import QImage, QPalette, QPixmap
+from PyQt5.QtGui import QImage, QPalette, QPixmap, QScreen
+import traceback #Can be removed once fully functional
+import numpy as np
 
 # First we want to get current path. 
 # Will be needed for cross platform purposes
@@ -52,6 +18,13 @@ def getCurrentPath():
         return os.path.dirname(sys.executable)
     else:
         return os.path.dirname(os.path.abspath(__file__))
+
+# Handle errors as PyQt doesn't output them to console
+sys._excepthook = sys.excepthook
+def exception_hook(exctype, value, traceback):
+    sys._excepthook(exctype, value, traceback)
+    sys.exit(1)
+sys.excepthook = exception_hook
 
 # Load UI
 current_path = getCurrentPath()
@@ -66,10 +39,66 @@ class MainWindow(QMainWindow):
 
         # Set title
         self.setWindowTitle("Face Morph tool")
+        
+        # Set initial vars
+        self.cameraDevices = None # QArray of devices
 
+        # Get devices:
+        self.getCameraDevices()
+
+        # Connect button sugnals
+        self._connectSignals()
+
+        # Set relevant actions
+
+        # Start cam feed:
+        self.initCam(self.cameraDevices)
+
+    # Prevent users from trying to break the app
+    def idiotchecker(self):
+        if not self.dd_devices:
+            return QMessageBox.about(self, "Error", "No device selected")
+        else:
+            return
+    # Connecting buttons to functions:
+
+    def _connectSignals(self):
+        self.button_startcam.clicked.connect(self.startCamera)
+        self.button_stopcam.clicked.connect(self.stopCamera)
+        self.button_captureimage.clicked.connect(self.captureImage)
+        self.button_morph.clicked.connect(self.processMorph)
+        self.dd_devices.currentIndexChanged.connect(self.ddUpdate)
+
+    # Button Functions: Start Camera
+    def startCamera(self):
+        self.camera.start()
+        self.camFeed.show()
+        return
+
+    # Button Functions: Stop Camera
+    def stopCamera(self):
+        self.camera.stop()
+        self.camFeed.hide()
+    
+    # Button Functions: Capture image
+    def imageCapture(self):
+        self.capture
+        return
+    
+    # Button Functions: Morph
+    def processMorph(self):
+        return
+
+    # Button Functions: Device dropdown
+    def ddUpdate():
+        # loop over camera devices and match deviceObject with str of item
+        # then initCam(deviceObject.data())
+        return
+
+    def getCameraDevices(self):
         # We need to know what devices exist so..
         # Placeholder for available devices:
-        camDevices = QByteArray()
+        self.cameraDevices = QByteArray()
         # Set this as an exclusive group (only one can be enabled at a time)
         camDevicesGroup = QActionGroup(self) # setExclusive(True) is default
 
@@ -80,26 +109,29 @@ class MainWindow(QMainWindow):
             deviceObject.setChecked(True)
             deviceObject.setData(devices)
             
-            if camDevices.isEmpty():
-                # QCamera.availableDevices() will return an empty object so..
-                camDevices = devices
+            # If no devices, QCamera.availableDevices() will return an empty object so..
+            if self.cameraDevices.isEmpty():
+                self.cameraDevices = devices
                 deviceObject.setCheckable(True)
             
             # Add devices to the 'Devices' Menu
             self.menuDevices.addAction(deviceObject)
-        
+            self.dd_devices.addItem(deviceName)
+            #self.dd_devices.addAction(deviceObject)
+
         # If we switch devices we want to refresh the feed:
         camDevicesGroup.triggered.connect(self.refreshCamDevice)
 
-        # Start cam feed:
-        self.initCam(camDevices)
-
-    def initCam(self, camDevices):
+    def initCam(self, cameraDevices):
         # If no device exists, object will be invalid so..
-        if camDevices.isEmpty():
+
+        ##
+        ## Camera Feed related
+        ##
+        if cameraDevices.isEmpty():
             self.camera = QCamera()
         else:
-            self.camera = QCamera(camDevices)
+            self.camera = QCamera(cameraDevices)
 
         # Enable / Disable UI elements based on whether cam is on or off
         self.camera.stateChanged.connect(self.updateCameraState)
@@ -112,6 +144,17 @@ class MainWindow(QMainWindow):
 
         # Set the capture mode to capture a video feed
         self.camera.setCaptureMode(QCamera.CaptureVideo)
+
+        ##
+        ## Image capture related
+        ##
+
+        self.capture = QCameraImageCapture(self.camera)
+        self.capture.imageCaptured.connect(self.processImage)
+
+        # When image is captured, display it in camMod
+        #self.capture.imageCaptured.connect(self.captureImage)
+
 
         # Start the cam
         self.camera.start()
@@ -129,19 +172,37 @@ class MainWindow(QMainWindow):
         elif state in (QCamera.UnloadedState, QCamera.LoadedState):
             self.actionStart_Camera.setEnabled(True)
             self.actionStop_Camera.setEnabled(False)
-            self.userTools.setEnabled(False)
+            self.userTools.setEnabled(True)
     
-    #Test
     # Refreshing status by re-running initCam with new action data
     def refreshCamDevice(self, action):
         self.initCam(action.data())
+        self.camFeed.show()
 
     # QOL shortcuts
     def keyPressEvent(self,keyEvent):
         if keyEvent.key() == Qt.Key_Escape:
-            self.closeApp()
-        elif keyEvent.key()==Qt.Key_F1:
+            sys.exit()
+
+    def captureImage(self):
+        # Bunch of error checking for valid emails blabla 
+        # but for now just complain if it's empty & use a name.
+        # The point of this is to have 1 image per person for the face average function
+        if not self.line_email.text():
+            QMessageBox.about(self,"Error","Please enter an email")
             return
+
+        email = self.line_email.text()
+        # Save the image using persons name
+        self.capture.capture(os.path.join(current_path,"images",str(email))) # This captures and saves directly from cam
+
+    def processImage(self,requestId,img):
+        # We want to force the capture to maintain aspect ratio of the left window so..
+        scaledImage = img.scaled(self.camFeed.size(),Qt.KeepAspectRatio)
+        # Apply the image to the right window
+        self.camMod.setPixmap(QPixmap.fromImage(scaledImage))
+            
+
 
 # Start App:
 if __name__=='__main__':
@@ -149,7 +210,6 @@ if __name__=='__main__':
     qt_app = MainWindow()
     qt_app.show()
     app.exec_()
-
 
 
 
