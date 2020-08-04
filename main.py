@@ -5,7 +5,7 @@ from PyQt5.QtMultimedia import (QAudioEncoderSettings, QCamera,
         QCameraImageCapture, QImageEncoderSettings, QMediaMetaData,
         QMediaRecorder, QMultimedia, QVideoEncoderSettings)
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QDialog,
-        QMainWindow, QMessageBox, QComboBox)
+        QMainWindow, QMessageBox, QComboBox, QInputDialog, QDialogButtonBox)
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QImage, QPalette, QPixmap, QScreen
 import traceback #Can be removed once fully functional
@@ -189,19 +189,86 @@ class MainWindow(QMainWindow):
         # but for now just complain if it's empty & use a name.
         # The point of this is to have 1 image per person for the face average function
         if not self.line_email.text():
-            QMessageBox.about(self,"Error","Please enter an email")
+            QMessageBox.about(self,"Error","Please enter a name")
             return
 
-        email = self.line_email.text()
+        name = self.line_email.text()
         # Save the image using persons name
-        self.capture.capture(os.path.join(current_path,"images",str(email))) # This captures and saves directly from cam
+
+        self.stackedWidget.setCurrentIndex(1)
+        # Okay so at this point I need to figure out whether I want to automatically run
+        # the morphing process or give the user the option to proceed.
+        # Since the current application is in the form of a basic desktop application
+        # I've opted for the latter:
+
+        self.capture.capture(os.path.join(current_path,"temp",str(name))) # This captures and saves directly from cam
+
+        # Resizing, aligning and other landmark detection goes here
+
+        # Face detection goes here
+
+        filename = str(name + ".jpg")
+        temp_file_path = os.path.join(current_path,"temp",filename)
+        image_file_path = os.path.join(current_path,"images",filename)
+
+        confirmation = self.confirmCapture()
+
+        if confirmation:
+            # Trigger face morph sequence:
+            # 1 Check existing file names. Throw except if file exists and ask if they wish to retake
+            # 2 run facial recognition, throw except if face exists with qmessagebox
+            # 3 if 2 returns none, save to images
+            # 4 run average program
+            # 5 display average_of_faces.jpg in the second viewport
+
+            # 1
+            exists = self.imageNameCheck(filename)
+
+
+            if not exists:    
+                os.replace(temp_file_path, image_file_path)
+                self.stackedWidget.setCurrentIndex(0)
+            else:
+                os.remove(temp_file_path)
+                self.stackedWidget.setCurrentIndex(0)
+        else:
+            os.remove(temp_file_path)
+            self.stackedWidget.setCurrentIndex(0)
+
 
     def processImage(self,requestId,img):
         # We want to force the capture to maintain aspect ratio of the left window so..
         scaledImage = img.scaled(self.camFeed.size(),Qt.KeepAspectRatio)
         # Apply the image to the right window
         self.camMod.setPixmap(QPixmap.fromImage(scaledImage))
-            
+
+    def confirmCapture(self):
+        confirmation = QMessageBox(QMessageBox.Question,'Confirmation','Are you happy with this image?', QMessageBox.Yes|QMessageBox.No)
+        
+        result = confirmation.exec_()
+        filename = str(self.line_email.text() + ".jpg")
+
+        if result == confirmation.Yes:
+            return True
+        else:
+            return False
+
+    def imageNameCheck(self, filename):
+        img_dir = os.path.join(current_path,"images")
+        print(filename)
+        for images in os.listdir(img_dir):
+            print(images)
+
+            if images == filename:
+                exists = QMessageBox(QMessageBox.Question,'Warning','You have already saved an image. Do you wish to overwrite it?', QMessageBox.Yes|QMessageBox.No)
+                result = exists.exec_()
+
+                if result == exists.Yes:
+                    return False
+                else:
+                    return True
+            else:
+                return False
 
 
 # Start App:
