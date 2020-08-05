@@ -27,7 +27,23 @@ def exception_hook(exctype, value, traceback):
     sys.exit(1)
 sys.excepthook = exception_hook
 
+def makeDirs():
+    IMAGE_PATH = os.path.join( getCurrentPath() , "images" )
+    TEMP_PATH = os.path.join( getCurrentPath() , "temp" )
+    FACES_PATH = os.path.join( getCurrentPath() , "images" , "faces" )
+    MORPHED_FINAL_PATH = os.path.join( getCurrentPath() , "images" , "final" )
+
+    if not os.path.exists( IMAGE_PATH ):
+        os.makedirs( IMAGE_PATH )
+    if not os.path.exists( TEMP_PATH ):
+        os.makedirs( TEMP_PATH )
+    if not os.path.exists( FACES_PATH ):
+        os.makedirs( FACES_PATH )
+    if not os.path.exists( MORPHED_FINAL_PATH ):
+        os.makedirs( MORPHED_FINAL_PATH )
+
 # Load UI
+makeDirs()
 current_path = getCurrentPath()
 uiMainApp = os.path.join(current_path,"BetterMain.ui")
 
