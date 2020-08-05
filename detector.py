@@ -167,3 +167,20 @@ def savePlt(  ):
         elif img_check > 1:
             print( "Multiple faces detected in {}. Skipping (for now). ".format( filename ) )
 
+def saveSingleFace( image ):
+    filename =  os.path.basename( image )
+    print("Processing: " + str( image ))
+    
+    img_check = detectFace( filename , image )
+
+    if img_check == 1:
+        resized_img, shape = faceExtractor( filename , image )
+        plt.imsave( os.path.join( "images" , "faces" , str( "resized" + filename ) ) ,  resized_img )
+        coordsToFile( filename , shape )
+
+    elif img_check == 0:
+        print("No faces detected")
+    
+    elif img_check > 1:
+        print( "Multiple faces detected in {}. Skipping (for now). ".format( filename ) )
+

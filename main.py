@@ -241,6 +241,8 @@ class MainWindow(QMainWindow):
             single_face_check = self.imageContainsSingleFace( temp_file_path )
 
             if ( not exists ) and ( single_face_check == 1 ):    
+                import detector
+                detector.saveSingleFace( temp_file_path )
                 os.replace(temp_file_path, image_file_path)
                 self.stackedWidget.setCurrentIndex(0)
             elif ( not exists ) and ( single_face_check == 0 ):
@@ -307,6 +309,14 @@ class MainWindow(QMainWindow):
         # Display morphed_faces.jpg from Final
         import detector
         import faceAverage
+
+        image_files = os.path.join( "images" , "faces" , "*.jpg")
+
+        files = len( glob.glob( image_files ) )
+        print(files)
+        if files < 2:
+            QMessageBox.about(self, "Error", "Not enough images. Need at least 2")
+            return
     
         detector.savePlt()
         faceAverage.saveMorphedFace()
