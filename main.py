@@ -10,6 +10,7 @@ from PyQt5.uic import loadUi
 from PyQt5.QtGui import QImage, QPalette, QPixmap, QScreen
 import traceback #Can be removed once fully functional
 import numpy as np
+import glob
 
 # First we want to get current path. 
 # Will be needed for cross platform purposes
@@ -66,7 +67,8 @@ class MainWindow(QMainWindow):
         self.button_startcam.clicked.connect(self.startCamera)
         self.button_stopcam.clicked.connect(self.stopCamera)
         self.button_captureimage.clicked.connect(self.captureImage)
-        self.button_morph.clicked.connect(self.processMorph)
+        self.button_addface.clicked.connect(self.addFace)
+        self.button_updatelast.clicked.connect(self.updateLast)
         self.dd_devices.currentIndexChanged.connect(self.ddUpdate)
 
     # Button Functions: Start Camera
@@ -85,9 +87,6 @@ class MainWindow(QMainWindow):
         self.capture
         return
     
-    # Button Functions: Morph
-    def processMorph(self):
-        return
 
     # Button Functions: Device dropdown
     def ddUpdate():
@@ -206,7 +205,6 @@ class MainWindow(QMainWindow):
         # Resizing, aligning and other landmark detection goes here
 
         # Face detection goes here
-
         filename = str(name + ".jpg")
         temp_file_path = os.path.join(current_path,"temp",filename)
         image_file_path = os.path.join(current_path,"images",filename)
@@ -224,9 +222,18 @@ class MainWindow(QMainWindow):
             # 1
             exists = self.imageNameCheck(filename)
 
+            single_face_check = self.imageContainsSingleFace( temp_file_path )
 
-            if not exists:    
+            if ( not exists ) and ( single_face_check == 1 ):    
                 os.replace(temp_file_path, image_file_path)
+                self.stackedWidget.setCurrentIndex(0)
+            elif ( not exists ) and ( single_face_check == 0 ):
+                QMessageBox.about(self, "Error", "No face detected. Please ensure your face is displayed and that you're not covering your face")
+                os.remove(temp_file_path)
+                self.stackedWidget.setCurrentIndex(0)
+            elif ( not exists ) and ( single_face_check > 1 ):
+                QMessageBox.about(self, "Error", "Too many faces detected. One image per person please")
+                os.remove(temp_file_path)
                 self.stackedWidget.setCurrentIndex(0)
             else:
                 os.remove(temp_file_path)
@@ -234,7 +241,6 @@ class MainWindow(QMainWindow):
         else:
             os.remove(temp_file_path)
             self.stackedWidget.setCurrentIndex(0)
-
 
     def processImage(self,requestId,img):
         # We want to force the capture to maintain aspect ratio of the left window so..
@@ -255,9 +261,7 @@ class MainWindow(QMainWindow):
 
     def imageNameCheck(self, filename):
         img_dir = os.path.join(current_path,"images")
-        print(filename)
         for images in os.listdir(img_dir):
-            print(images)
 
             if images == filename:
                 exists = QMessageBox(QMessageBox.Question,'Warning','You have already saved an image. Do you wish to overwrite it?', QMessageBox.Yes|QMessageBox.No)
@@ -270,6 +274,51 @@ class MainWindow(QMainWindow):
             else:
                 return False
 
+    def imageContainsSingleFace(self, image):               
+        import detector
+
+        filename =  os.path.basename( image )
+                
+        number_of_faces = detector.detectFace(filename, image)         
+         
+        return number_of_faces
+
+
+        
+    def addFace(self):
+        # Run Detector.py
+        # Run faceAverage.py
+        # Display morphed_faces.jpg from Final
+        import detector
+        import faceAverage
+    
+        detector.savePlt()
+        faceAverage.saveMorphedFace()
+
+        if os.path.isfile( os.path.join( "images" , "final" , "morphed_faces.jpg" ) ):
+            print("File Exists")
+            morphed_image = QPixmap( os.path.join( "images" , "final" , "morphed_faces.jpg" ) )
+            scaled_morphed_image = morphed_image.scaled(self.imgMorphed.size(),Qt.KeepAspectRatio)
+            self.imgMorphed.setPixmap( scaled_morphed_image )
+        else:
+            print("Missing")
+
+    def updateLast(self):
+
+        FACE_PATH = os.path.join( "images" , "faces" , "*.jpg" )
+        try:
+            latest_image = max( glob.iglob( FACE_PATH ) , key = os.path.getctime )
+        except ValueError:
+            QMessageBox.about(self, "Error", "No images saved")
+            return
+                    
+        try:
+            last_face = QPixmap( latest_image )
+            scaled_last_face = last_face.scaled(self.img_lastfaceadded.size(),Qt.KeepAspectRatio)
+            self.img_lastfaceadded.setPixmap( scaled_last_face )
+        except IOError:
+            QMessageBox.about(self, "Error", "No images saved")
+        
 
 # Start App:
 if __name__=='__main__':

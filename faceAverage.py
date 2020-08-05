@@ -8,6 +8,8 @@ import cv2
 import numpy as np
 import math
 import sys
+import matplotlib.pyplot as plt
+
 
 # Read points from text files in directory
 def readPoints(path) :
@@ -190,7 +192,7 @@ def warpTriangle(img1, img2, t1, t2) :
 
 
 
-if __name__ == '__main__' :
+def saveMorphedFace():
     
     path = os.path.join( "images" , "faces" )
     
@@ -291,5 +293,11 @@ if __name__ == '__main__' :
     output = output / numImages
 
     # Display result
-    cv2.imshow('image', output)
-    cv2.waitKey(0)
+    #cv2.imshow('image', output)
+    
+    # cv2 reads in BGR so we need to convert it to RGB
+    morphed_img = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
+
+    # Now we can save using matplotlib
+    plt.imsave( os.path.join( "images" , "final" , str( "morphed_faces" + ".jpg" ) ) ,  morphed_img )
+

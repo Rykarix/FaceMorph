@@ -141,7 +141,7 @@ def detectFace( filename , image ):
     elif number_of_faces == 1:
         return 1
 
-def savePlt( IMAGE_FOLDER ):
+def savePlt(  ):
     '''
     Feed function a folder path and it will
 
@@ -152,8 +152,8 @@ def savePlt( IMAGE_FOLDER ):
     # For each image in a directory, detect a face
     for image in glob.glob( IMAGE_FOLDER ):
         filename =  os.path.basename( image )
-        print("Processing: " + str( filename ))
-
+        print("Processing: " + str( image ))
+        
         img_check = detectFace( filename , image )
 
         if img_check == 1:
@@ -167,6 +167,3 @@ def savePlt( IMAGE_FOLDER ):
         elif img_check > 1:
             print( "Multiple faces detected in {}. Skipping (for now). ".format( filename ) )
 
-
-
-savePlt( IMAGE_FOLDER )
