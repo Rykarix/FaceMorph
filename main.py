@@ -85,7 +85,6 @@ class MainWindow(QMainWindow):
         self.button_captureimage.clicked.connect(self.captureImage)
         self.button_addface.clicked.connect(self.addFace)
         self.button_updatelast.clicked.connect(self.updateLast)
-        self.dd_devices.currentIndexChanged.connect(self.ddUpdate)
 
     # Button Functions: Start Camera
     def startCamera(self):
@@ -105,10 +104,10 @@ class MainWindow(QMainWindow):
     
 
     # Button Functions: Device dropdown
-    def ddUpdate():
+    def ddUpdate(self, deviceObject):
         # loop over camera devices and match deviceObject with str of item
         # then initCam(deviceObject.data())
-        return
+        return self.initCam(deviceObject.data())
 
     def getCameraDevices(self):
         # We need to know what devices exist so..
@@ -121,17 +120,16 @@ class MainWindow(QMainWindow):
             deviceName = QCamera.deviceDescription(devices)
             deviceObject = QAction(deviceName, camDevicesGroup)
             deviceObject.setCheckable(True)
-            deviceObject.setChecked(True)
             deviceObject.setData(devices)
             
             # If no devices, QCamera.availableDevices() will return an empty object so..
             if self.cameraDevices.isEmpty():
                 self.cameraDevices = devices
-                deviceObject.setCheckable(True)
+                deviceObject.setChecked(True)
             
             # Add devices to the 'Devices' Menu
             self.menuDevices.addAction(deviceObject)
-            self.dd_devices.addItem(deviceName)
+            #self.dd_devices.addItem(deviceName)
             #self.dd_devices.addAction(deviceObject)
 
         # If we switch devices we want to refresh the feed:
