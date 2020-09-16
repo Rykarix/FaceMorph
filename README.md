@@ -9,14 +9,16 @@ Next step will be to take snapshots
 ## TASK LIST:
  
  First we need a UI:
- - User should see a live cam feed
- - User should see a preview of processed images 
+ ~~User should see a live cam feed~~
+ ~~User should see a preview of processed images~~
  - The app should contain a toolbox that helps them manage
    camera settings, Image processing functions and anything
    else they need
 
  Then we need to write functions that do tings :)
- - Face morph
+ - ~~Face morph
+ 
+ Things to consider:
  - Infrared (Detect fevers - especially useful considering Covid)
  - Malinoma detection? How? Detect blemishes on skin? Chris?
  - Aging process?
