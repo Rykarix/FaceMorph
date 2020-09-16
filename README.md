@@ -36,5 +36,5 @@ Next step will be to take snapshots
  UI:
  PyQt5 Source code & tools: https://riverbankcomputing.com/software/pyqt/download5
  Qt docs: https://doc.qt.io/qt-5/index.html
- This will be all I need to use for GUI as 99% of everything else on the internet
- that tries to use & explain the PyQt package isn't coded too well
+ This will be all I need to use for GUI. (Many guides on the internet
+explain & write examples of the PyQt package poorly)
