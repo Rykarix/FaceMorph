@@ -3,11 +3,13 @@
 # Version 1.0
 Basic GUI now made including connected camera
 
-Next step will be to take snapshots
+<p align="center">
+  <img src="https://github.com/Rykarix/FaceMorph/blob/master/images/face_morph_gui.png">
+</p>
 
 
 ## TASK LIST:
- 
+
  First we need a UI:
  ~~User should see a live cam feed~~
  ~~User should see a preview of processed images~~
@@ -16,21 +18,27 @@ Next step will be to take snapshots
    else they need
 
  Then we need to write functions that do tings :)
- - ~~Face morph
- 
+ - ~~Face morph~~
+ - Will morph/merge multiple faces into a single face. Using test images produces the following:
+
+<p align="center">
+  <img src="https://github.com/Rykarix/FaceMorph/blob/master/images/morphed_faces.jpg">
+</p>
+
+
  Things to consider:
  - Infrared (Detect fevers - especially useful considering Covid)
  - Malinoma detection? How? Detect blemishes on skin? Chris?
  - Aging process?
- 
+
  Things I'd do with infinite resources / time:
  - Mount the camera to a robotic arm - have it auto detect best pos.
  - Use a point cloud camera - 3D scan of face
  - Apply above processes in 3D
 
- To accomplish the above I will be making heavy use of 2 core packages. 
+ To accomplish the above I will be making heavy use of 2 core packages.
  PyQt5 to handle GUI and OpenCV to handle image processing.
- Both are well known and updated regularly. 
+ Both are well known and updated regularly.
 
 ## Listing the resources I'm using for Academic integrity
  UI:
