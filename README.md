@@ -1,9 +1,10 @@
-<i><b>
-Archived due to being redundant and abandoned. This was a project for Uni so that they could add it to their interactive gallery for open days. </b>
+<i><b>Archived due to being a stale project.</b>
+
+This was a project for Uni so that they could add it to their interactive gallery for open days. It's really old, shockingly bad code but it was one of my first code projects as a 'baby yoda' coder.
+
+Aside from being a demonstration on how not to write python code it's a humble reminder that we all have to start somewhere 😝
 </i>
 
-## Notes from future self
-This is really old, shockingly bad code. A complete mess... But it was one of my first code projects as a 'baby yoda' coder. Left for nostalgia, a demonstration of how to not write python code and as a reminder that we all have to start somewhere. Don't judge me too harshly 😅
 
 --- 
 
