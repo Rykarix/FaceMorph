@@ -1,11 +1,9 @@
 <i><b>
-Archived due to being redundant and abandoned. This was a fun project, started to solve a problem and abandoned once it helped me land my first 'proper coding job' and my priorities shifted.</b>
+Archived due to being redundant and abandoned. This was a project for Uni so that they could add it to their interactive gallery for open days. </b>
 </i>
 
 ## Notes from future self
-This was my final project for Uni
-
-This is really old, shockingly bad code. A complete mess... But it was one of my first code projects as a 'baby yoda' coder. Left for nostalgia & a demonstration of how to not write python code
+This is really old, shockingly bad code. A complete mess... But it was one of my first code projects as a 'baby yoda' coder. Left for nostalgia, a demonstration of how to not write python code and as a reminder that we all have to start somewhere. Don't judge me too harshly 😅
 
 --- 
 
